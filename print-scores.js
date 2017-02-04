@@ -1,21 +1,48 @@
-var allValues = [2, 3, 4, 6, 7];
+//Print out all the ways you can reach the score of n with possible points S = [2,3,4,6,7];
+var allValues = [1, 2, 3, 4, 6, 7, 10];
 var totalScore = 10;
 
-function printScores(values, score, possible) {
-  var sum = possible.reduce(function(a, b) { return a + parseInt(b) }, 0);
-  console.log('sum', sum);
+// function totals(values) {
+//   var temp = [[]];
+//   for (var i = 0; i < values.length; i++) {
+//     for(var j = 0, len = temp.length; j < len; j++) {
+//       temp.push(temp[j].concat(values[i]));
+//     }
+//   }
+//   return temp;
+// }
 
-  if (sum === score) {
-    return possible;
-  } else if (sum > score) {
-    return false;
+function totals(values) {
+  var combinations = [];
+  function combinate(curr, remains) {
+    if (!curr && !remains) {
+      return false;
+    }
+    if (remains.length === 0) {
+      combinations.push(curr);
+    } else {
+      combinate(curr.concat(remains[0]), remains.slice(1));
+      combinate(curr, remains.slice(1));
+    }
   }
-
-  for (var i = 0; i < values.length; i++) {
-    var curr = values.splice(i, 1);
-    possible.push(curr);
-    printScores(values, score, possible);
-  }
+  combinate([], values);
+  return combinations;
 }
 
-console.log(printScores(allValues, totalScore, []));
+function sum(values) {
+  return values.reduce(function(prev, curr) {
+    return prev + curr;
+  }, 0);
+}
+
+function printScores(values, totalScore) {
+  var combinations = totals(values.sort(function(a, b) { return a - b; }));
+  return combinations.reduce(function(vals, combination) {
+    if (sum(combination) === totalScore) {
+      vals.push(combination);
+    }
+    return vals;
+  }, []);
+};
+
+console.log(printScores(allValues, totalScore));
